@@ -1,39 +1,40 @@
+import 'package:flutter/services.dart';
 import 'package:journal/db/journal_entry_dto.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseManager {
 
   static const DATABASE_FILENAME = 'journal.sqlite3.db';
-  static const SQL_CREATE_SCHEMA = 'CREATE TABLE IF NOT EXISTS journal_entries(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, rating INTEGER, date TEXT)';
   static const SQL_INSERT = 'INSERT INTO journal_entries(title, body, rating, date) VALUES(?, ?, ?, ?)';
   static const SQL_SELECT = 'SELECT * FROM journal_entries';
 
-  late final Database db;
-
   static DatabaseManager? _instance;
 
-  DatabaseManager._internal() {
-    initialize();
-    _instance = this;
+  late final Database _db;
+
+  DatabaseManager._({required Database database}) : _db = database;
+
+  factory DatabaseManager.getInstance() {
+    assert(_instance != null);
+    return _instance!;
   }
 
-  factory DatabaseManager() => _instance ?? DatabaseManager._internal();
-
-  Future initialize() async {
-    db = await openDatabase(
+  static Future initialize() async {
+    final db = await openDatabase(
       DATABASE_FILENAME,
-      onCreate: (db, version) {
-        _createTables(db, SQL_CREATE_SCHEMA);
-      },
+      version: 1,
+      onCreate: (db, version) => _createTables(db),
     );
+    _instance = DatabaseManager._(database: db);
   }
 
-  void _createTables(Database db, String sql) async {
-    await db.execute(sql);
+  static void _createTables(Database db) async {
+    final schema = await rootBundle.loadString('assets/schema_0.sql');
+    await db.execute(schema);
   }
 
   void saveJournalEntry({required JournalEntryDTO dto}) {
-    db.transaction( (txn) async {
+    _db.transaction( (txn) async {
       await txn.rawInsert(
         SQL_INSERT,
         [dto.title, dto.body, dto.rating, dto.dateTime.toString()]
@@ -42,6 +43,6 @@ class DatabaseManager {
   }
 
   Future<List<Map>> journalEntries() async {
-    return await db.rawQuery(SQL_SELECT);
+    return await _db.rawQuery(SQL_SELECT);
   }
 }
