@@ -11,6 +11,6 @@ void main() async {
     DeviceOrientation.landscapeRight,
     DeviceOrientation.portraitUp
   ]);
-  DatabaseManager.initialize();
+  await DatabaseManager.initialize();
   runApp(App(preferences: await SharedPreferences.getInstance()));
 }
