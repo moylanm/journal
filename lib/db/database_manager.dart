@@ -19,7 +19,7 @@ class DatabaseManager {
     return _instance!;
   }
 
-  static Future initialize() async {
+  static Future<void> initialize() async {
     final db = await openDatabase(
       DATABASE_FILENAME,
       version: 1,
@@ -28,7 +28,7 @@ class DatabaseManager {
     _instance = DatabaseManager._(database: db);
   }
 
-  static void _createTables(Database db) async {
+  static Future<void> _createTables(Database db) async {
     final schema = await rootBundle.loadString('assets/schema_0.sql');
     await db.execute(schema);
   }
