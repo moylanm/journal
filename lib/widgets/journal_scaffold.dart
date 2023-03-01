@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
-Widget journalScaffold({required GlobalKey<ScaffoldState> key, required String title, required Widget body, Widget? floatingActionButton}) {
+Widget journalScaffold({required String title, required Widget body, Widget? floatingActionButton}) {
   return Scaffold(
-    key: key,
     appBar: AppBar(
       title: Text(title),
       actions: [
-        IconButton(
-          onPressed: () => key.currentState!.openEndDrawer(),
-          icon: const Icon(Icons.settings)
+        Builder(builder: ((context) {
+            return IconButton(
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+              icon: const Icon(Icons.settings)
+            );
+          })
         )
       ],
     ),
     body: body,
-    floatingActionButton: floatingActionButton,
     endDrawer: Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -29,6 +30,7 @@ Widget journalScaffold({required GlobalKey<ScaffoldState> key, required String t
           )
         ],
       ),
-    )
+    ),
+    floatingActionButton: floatingActionButton
   );
 }
