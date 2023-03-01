@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:journal/widgets/journal_entry_form.dart';
 
-class NewJournalEntry extends StatelessWidget {
-  static const routeName = 'new_entry';
+class NewJournalEntryScreen extends StatelessWidget {
 
-  const NewJournalEntry({super.key});
+  const NewJournalEntryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
