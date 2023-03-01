@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:journal/db/database_manager.dart';
+import 'package:journal/db/journal_entry_dto.dart';
 
 class JournalEntryForm extends StatefulWidget {
   const JournalEntryForm({super.key});
@@ -11,9 +12,9 @@ class JournalEntryForm extends StatefulWidget {
 class _JournalEntryFormState extends State<JournalEntryForm> {
   final _formKey = GlobalKey<FormState>();
 
-  String? title;
-  String? body;
-  int? rating;
+  String? _title;
+  String? _body;
+  int? _rating;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
             validator: (value) => value == null || value == '' ? 'enter a title' : null,
             onSaved: (value) {
               setState(() {
-                title = value;
+                _title = value;
               });
             },
           ),
@@ -47,12 +48,11 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
             validator: (value) => value == null || value == '' ? 'enter a body' : null,
             onSaved:(value) {
               setState(() {
-                body = value;
+                _body = value;
               });
             },
           ),
           DropdownButtonFormField(
-
             items: const [
               DropdownMenuItem(value: 1, child: Text('1')),
               DropdownMenuItem(value: 2, child: Text('2')),
@@ -62,13 +62,13 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
             ],
             onChanged: (value) {
               setState(() {
-                rating = value;
+                _rating = value;
               });
             },
             validator: (value) => value == null ? 'choose a rating' : null,
             onSaved: (value) {
               setState(() {
-                rating = value;
+                _rating = value;
               });
             },
           ),
@@ -87,8 +87,16 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
                   onPressed: () async {
                     final form = _formKey.currentState;
                     if (form != null && form.validate()) {
+                      form.save();
                       final databaseManager = DatabaseManager.getInstance();
-                      // enter into database
+                      databaseManager.saveJournalEntry(dto: 
+                        JournalEntryDTO(
+                          title: _title!,
+                          body: _body!, 
+                          rating: _rating!,
+                          dateTime: DateTime.now()
+                        )
+                      );
                       Navigator.of(context).pop();
                     }
                   },
