@@ -4,5 +4,10 @@ class JournalEntryDTO {
   final int rating;
   final DateTime dateTime;
 
-  JournalEntryDTO(this.title, this.body, this.rating, this.dateTime);
+  JournalEntryDTO({
+    required this.title,
+    required this.body,
+    required this.rating,
+    required this.dateTime
+  });
 }
