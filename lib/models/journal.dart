@@ -5,5 +5,11 @@ class Journal {
 
   Journal(this.entries);
 
+  Journal.empty() : entries = [];
+
   get isEmpty => entries.isEmpty;
+
+  get length => entries.length;
+
+  operator [](int i) => entries[i];
 }
