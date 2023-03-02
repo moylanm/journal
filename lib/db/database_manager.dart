@@ -4,9 +4,9 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseManager {
 
-  static const DATABASE_FILENAME = 'journal.sqlite3.db';
-  static const SQL_INSERT = 'INSERT INTO journal_entries(title, body, rating, date) VALUES(?, ?, ?, ?)';
-  static const SQL_SELECT = 'SELECT * FROM journal_entries';
+  static const databaseFilename = 'journal.sqlite3.db';
+  static const sqlInsert = 'INSERT INTO journal_entries(title, body, rating, date) VALUES(?, ?, ?, ?)';
+  static const sqlSelect = 'SELECT * FROM journal_entries';
 
   static DatabaseManager? _instance;
 
@@ -21,7 +21,7 @@ class DatabaseManager {
 
   static Future<void> initialize() async {
     final db = await openDatabase(
-      DATABASE_FILENAME,
+      databaseFilename,
       version: 1,
       onCreate: (db, version) => _createTables(db),
     );
@@ -36,13 +36,13 @@ class DatabaseManager {
   void saveJournalEntry({required JournalEntryDTO dto}) {
     _db.transaction( (txn) async {
       await txn.rawInsert(
-        SQL_INSERT,
+        sqlInsert,
         [dto.title, dto.body, dto.rating, dto.dateTime.toString()]
       );
     });
   }
 
   Future<List<Map>> journalEntries() async {
-    return await _db.rawQuery(SQL_SELECT);
+    return await _db.rawQuery(sqlSelect);
   }
 }
