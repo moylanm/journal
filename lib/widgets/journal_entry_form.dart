@@ -78,7 +78,7 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(context).pop(false),
                   child: const Text('Cancel')
                 ),
                 SizedBox(width: MediaQuery.of(context).size.width / 4),
@@ -96,7 +96,7 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
                           dateTime: DateTime.now()
                         )
                       );
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(true);
                     }
                   },
                   child: const Text('Save')

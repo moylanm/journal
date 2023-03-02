@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:journal/db/database_manager.dart';
 import 'package:journal/db/journal_entry_dao.dart';
 import 'package:journal/models/journal.dart';
+import 'package:journal/models/journal_entry.dart';
 import 'package:journal/screens/journal_entry.dart';
-import 'package:journal/screens/new_entry.dart';
+import 'package:journal/widgets/journal_entry_form.dart';
 import 'package:journal/widgets/journal_scaffold.dart';
 import 'package:journal/widgets/welcome.dart';
 
@@ -26,8 +27,7 @@ class _JournalEntryListState extends State<JournalEntryListScreen> {
   }
   
   void _initializeJournal() async {
-    final dbm = DatabaseManager.getInstance();
-    final journalEntries = await JournalEntryDAO.journalEntries(dbm);
+    final journalEntries = await _getJournalEntries();
 
     if (mounted) {
       setState(() {
@@ -35,20 +35,40 @@ class _JournalEntryListState extends State<JournalEntryListScreen> {
       });
     }
   }
+
+  Future<List<JournalEntry>> _getJournalEntries() async {
+    final dbm = DatabaseManager.getInstance();
+    return await JournalEntryDAO.journalEntries(dbm);
+  }
   
   @override
   Widget build(BuildContext context) {
-    return journalScaffold(
+    return JournalScaffold(
       title: journal.isEmpty ? 'Welcome' : 'Journal Entries',
       body: journal.isEmpty ? welcome() : LayoutBuilder(builder: _layoutDesignator),
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('New Entry'),
         icon: const Icon(Icons.add),
-        onPressed:() {
-          Navigator.push(
+        onPressed:() async {
+          final popResult = await Navigator.push<bool>(
             context,
-            MaterialPageRoute(builder: (context) => const  NewJournalEntryScreen())
+            MaterialPageRoute<bool>(builder: (context) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('New Journal Entry'),
+                ),
+                body: const JournalEntryForm()
+              );
+            })
           );
+
+          if (popResult!) {
+            final journalEntries = await _getJournalEntries();
+
+            setState(() {
+              journal = Journal(journalEntries);
+            });
+          }
         },
       )
     );
@@ -69,17 +89,15 @@ class BasicView extends StatelessWidget {
     return ListView.builder(
       itemCount: journal.length,
       itemBuilder: (context, index) {
-        return Card(
-          child: ListTile(
-            title: Text(journal[index].title),
-            subtitle: Text(journal[index].formattedDate),
-            onTap:() {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => JournalEntryScreen(entry: journal[index]))
-              );
-            },
-          ),
+        return ListTile(
+          title: Text(journal[index].title),
+          subtitle: Text(journal[index].formattedDate),
+          onTap:() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => JournalEntryScreen(entry: journal[index]))
+            );
+          },
         );
       }
     );
@@ -105,6 +123,7 @@ class _MasterDetailViewState extends State<MasterDetailView> {
       child: Row(
         children: [
           _masterList(context),
+          const SizedBox(width: 80),
           _detailView(context)
         ],
       ),
@@ -117,16 +136,14 @@ class _MasterDetailViewState extends State<MasterDetailView> {
       child: ListView.builder(
         itemCount: widget.journal.length,
         itemBuilder: ((context, index) {
-          return Card(
-            child: ListTile(
-              title: Text(widget.journal[index].title),
-              subtitle: Text(widget.journal[index].formattedDate),
-              onTap:() {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-            ),
+          return ListTile(
+            title: Text(widget.journal[index].title),
+            subtitle: Text(widget.journal[index].formattedDate),
+            onTap:() {
+              setState(() {
+                currentIndex = index;
+              });
+            },
           );
         })
       ),
