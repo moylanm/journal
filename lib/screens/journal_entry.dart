@@ -10,7 +10,7 @@ class JournalEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return journalScaffold(
+    return JournalScaffold(
       title: entry.formattedDate,
       body: _journalBody()
     );
@@ -20,8 +20,10 @@ class JournalEntryScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(entry.title, style: const TextStyle(fontSize: 25)),
+          Text('Rating: ${entry.rating}'),
           const SizedBox(height: 10.0),
           Text(entry.body),
         ],
