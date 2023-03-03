@@ -157,8 +157,10 @@ class _MasterDetailViewState extends State<MasterDetailView> {
         body: Container(
           padding: const EdgeInsets.all(10),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(widget.journal[currentIndex].title, style: const TextStyle(fontSize: 25)),
+              Text('Rating: ${widget.journal[currentIndex].rating}'),
               const SizedBox(height: 10.0),
               Text(widget.journal[currentIndex].body),
             ],
